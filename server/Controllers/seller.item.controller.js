@@ -5,7 +5,7 @@ const path = require("path");
 //  MULTER STORAGE..
 const Storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./uploads");
+    cb(null, path.basename("client/public/uploads"));
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname);
@@ -28,7 +28,7 @@ const insert = async (req, res) => {
       product_Category,
       product_Thumbnail,
       product_Images,
-      product_Quantity
+      product_Quantity,
     } = req.body;
     const newProduct = new sellerItemSchema({
       product_SellerID: req.body.product_SellerID,
@@ -39,7 +39,7 @@ const insert = async (req, res) => {
       product_longDescription: req.body.product_longDescription,
       product_Images: req.files["product_Images"],
       product_Thumbnail: req.files["product_Thumbnail"][0],
-      product_Quantity:req.body.product_Quantity
+      product_Quantity: req.body.product_Quantity,
     });
     const finalProd = await newProduct.save();
     console.log("finalProd is ", finalProd);
@@ -57,17 +57,19 @@ const insert = async (req, res) => {
 
 //Read Items Realated To A specific Seller.
 const read = async (req, res) => {
-  console.log( "req.body.product_SellerID",req.user.id)
+  console.log("req.body.product_SellerID", req.user.id);
 
- try {
-    await sellerItemSchema.find({"product_SellerID":req.user.id}).then((result)=>{
-      // console.log(result)
-      res.status(200).json(result);
+  try {
+    await sellerItemSchema
+      .find({ product_SellerID: req.user.id })
+      .then((result) => {
+        // console.log(result)
+        res.status(200).json(result);
         // res.json(result)
-    }).catch((err)=>{
-      console.log("err",err)
-
-    })
+      })
+      .catch((err) => {
+        console.log("err", err);
+      });
   } catch (error) {
     console.log(error);
   }
